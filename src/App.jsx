@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 
-// ── Storage helpers ──────────────────────────────────────────────
 const STORAGE_KEYS = { diary: "selena_diary", used: "selena_used" };
 const load = (key) => { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } };
 const save = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} };
 
-// ── AI call ──────────────────────────────────────────────────────
 async function callClaude(prompt) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -19,11 +17,21 @@ async function callClaude(prompt) {
   const data = await res.json();
   return data.content?.map(b => b.text || "").join("") || "";
 }
+```
 
-// ── Categories ───────────────────────────────────────────────────
+Then also check that your `api/claude.js` file exists in the right place. Can you confirm — in VS Code's left sidebar, do you see a folder called `api` at the **top level** of your project (same level as `src`)?
+
+It should look like this:
+```
+my-idea-generator/
+├── api/
+│   └── claude.js       ← should be here
+├── src/
+│   └── App.jsx
+├── package.json
+}
+
 const CATEGORIES = ["Dating","Hinge","First Dates","Dating Men","Dating in Korea","Situationships","Red Flags","Green Flags","Single Life","Romance"];
-
-// ── Fonts ────────────────────────────────────────────────────────
 const FONT_URL = "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap";
 
 export default function App() {
@@ -130,7 +138,6 @@ Respond ONLY with valid JSON, no markdown:
     setLoadingHooks(false);
   };
 
-  // ── Styles ────────────────────────────────────────────────────
   const s = {
     app: { minHeight: "100vh", background: "#faf7f4", fontFamily: "'DM Sans', sans-serif", color: "#1a1a1a" },
     header: { background: "#1a1a1a", padding: "28px 24px 20px", textAlign: "center" },
@@ -163,7 +170,6 @@ Respond ONLY with valid JSON, no markdown:
 
         <div style={s.body}>
 
-          {/* ── DIARY TAB ── */}
           {tab === "diary" && (
             <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 160px)" }}>
               <div style={{ padding: "16px 20px 8px", borderBottom: "1px solid #ede8e2" }}>
@@ -178,11 +184,8 @@ Respond ONLY with valid JSON, no markdown:
                     <p style={{ fontSize: 14, fontStyle: "italic" }}>Start typing your daily happenings...<br />Your entries become content gold.</p>
                   </div>
                 )}
-                {entries.map((e, i) => (
-                  <div key={e.id} style={{
-                    display: "flex", justifyContent: "flex-end", marginBottom: 12,
-                    animation: "fadeIn 0.3s ease"
-                  }}>
+                {entries.map((e) => (
+                  <div key={e.id} style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12, animation: "fadeIn 0.3s ease" }}>
                     <div style={{
                       background: "#1a1a1a", color: "#f5e6d3", borderRadius: "18px 18px 4px 18px",
                       padding: "12px 16px", maxWidth: "80%", fontSize: 14, lineHeight: 1.5,
@@ -219,7 +222,6 @@ Respond ONLY with valid JSON, no markdown:
             </div>
           )}
 
-          {/* ── IDEAS TAB ── */}
           {tab === "ideas" && (
             <div style={{ padding: "24px 20px" }}>
               <p style={{ fontSize: 13, color: "#999", marginBottom: 20, fontStyle: "italic" }}>
@@ -238,10 +240,12 @@ Respond ONLY with valid JSON, no markdown:
               </div>
 
               <button onClick={generateIdeas} disabled={!selectedCat || loadingIdeas} style={{
-                width: "100%", padding: "16px", borderRadius: 12, border: "none", cursor: selectedCat ? "pointer" : "not-allowed",
-                background: selectedCat ? "#1a1a1a" : "#e0d8cf", color: selectedCat ? "#f5e6d3" : "#aaa",
-                fontSize: 13, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif",
-                marginBottom: 24, fontWeight: 500, transition: "all 0.2s"
+                width: "100%", padding: "16px", borderRadius: 12, border: "none",
+                cursor: selectedCat ? "pointer" : "not-allowed",
+                background: selectedCat ? "#1a1a1a" : "#e0d8cf",
+                color: selectedCat ? "#f5e6d3" : "#aaa",
+                fontSize: 13, letterSpacing: 2, textTransform: "uppercase",
+                fontFamily: "'DM Sans', sans-serif", marginBottom: 24, fontWeight: 500, transition: "all 0.2s"
               }}>
                 {loadingIdeas ? "✦ Searching your diary..." : "✦ Find My Best Ideas"}
               </button>
@@ -302,7 +306,6 @@ Respond ONLY with valid JSON, no markdown:
             </div>
           )}
 
-          {/* ── HOOKS TAB ── */}
           {tab === "hooks" && (
             <div style={{ padding: "24px 20px" }}>
               {!hooks && !loadingHooks && (
@@ -313,7 +316,7 @@ Respond ONLY with valid JSON, no markdown:
               )}
               {loadingHooks && (
                 <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
-                  <div style={{ fontSize: 32, marginBottom: 12, animation: "spin 1s linear infinite", display: "inline-block" }}>✦</div>
+                  <div style={{ fontSize: 32, marginBottom: 12 }}>✦</div>
                   <p style={{ fontSize: 14, fontStyle: "italic" }}>Crafting your viral hooks...</p>
                 </div>
               )}
@@ -350,7 +353,6 @@ Respond ONLY with valid JSON, no markdown:
             </div>
           )}
 
-          {/* ── USED TAB ── */}
           {tab === "used" && (
             <div style={{ padding: "24px 20px" }}>
               <p style={{ fontSize: 13, color: "#999", marginBottom: 20, fontStyle: "italic" }}>
@@ -379,7 +381,6 @@ Respond ONLY with valid JSON, no markdown:
       </div>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
         textarea:focus { border-color: #1a1a1a !important; }
       `}</style>
