@@ -17,19 +17,6 @@ async function callClaude(prompt) {
   const data = await res.json();
   return data.content?.map(b => b.text || "").join("") || "";
 }
-```
-
-Then also check that your `api/claude.js` file exists in the right place. Can you confirm — in VS Code's left sidebar, do you see a folder called `api` at the **top level** of your project (same level as `src`)?
-
-It should look like this:
-```
-my-idea-generator/
-├── api/
-│   └── claude.js       ← should be here
-├── src/
-│   └── App.jsx
-├── package.json
-}
 
 const CATEGORIES = ["Dating","Hinge","First Dates","Dating Men","Dating in Korea","Situationships","Red Flags","Green Flags","Single Life","Romance"];
 const FONT_URL = "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap";
